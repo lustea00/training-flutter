@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:tes12345/controller/tes_controller.dart';
 import 'package:tes12345/telepon.dart';
-
-Telepon tempData = new Telepon();
 
 class HelloApp extends StatelessWidget {
   @override
@@ -36,12 +36,19 @@ class _HelloPage extends State<HelloPage> {
     super.initState();
   }
 
-  void _looping() {
-    for (var i = 0; i < 10; i++) {
-      tempData.setNama("Nama Tes");
-      tempData.setNomor("0888888");
+  void _looping() async {
+    Telepon tempData = new Telepon();
+    var res = await TesController().getData();
+    Logger().i(res);
+    for (var i = 0; i < res.length; i++) {
+      tempData.setNama(res[i]['first_name']);
+      tempData.setNomor(res[i]['email']);
       _telepon.add(tempData);
     }
+
+    setState((){
+          // _telepon = _telepon;
+      });
   }
 
   @override
