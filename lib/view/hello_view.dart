@@ -27,7 +27,9 @@ class HelloPage extends StatefulWidget {
 class _HelloPage extends State<HelloPage> {
   List<Telepon> _telepon = <Telepon>[];
   // List<String> _dinamis = <String>[];
-  
+  final TextEditingController _nameCon = new TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     // _dinamis[0] = "nandi";
@@ -36,42 +38,70 @@ class _HelloPage extends State<HelloPage> {
     super.initState();
   }
 
+  //kalau ada await harus ada async setelah nama fungsi
   void _looping() async {
-    Telepon tempData = new Telepon();
-    var res = await TesController().getData();
-    Logger().i(res);
+    //fungsi await digunakan untk menunggu data Future didapat
+    // var res = await TesController().getData();
+    var res = [];
     for (var i = 0; i < res.length; i++) {
-      tempData.setNama(res[i]['first_name']);
-      tempData.setNomor(res[i]['email']);
+      // Telepon tempData = new Telepon();
+      // tempData.setNama(res[i]['first_name']);
+      // tempData.setNomor(res[i]['email']);
+
+      Telepon tempData = new Telepon()
+        ..setNama(res[i]['first_name'])
+        ..setNomor(res[i]['email']);
       _telepon.add(tempData);
     }
 
-    setState((){
-          // _telepon = _telepon;
-      });
+    setState(() {
+      // _telepon = _telepon;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView.builder(
-        itemCount: _telepon.length,
-        itemBuilder: (context, i) {
-          return ListTile(
-            title: Text(_telepon[i].getNama),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(_telepon[i].getNomor, textAlign: TextAlign.left,),
-                Text("alamat", textAlign: TextAlign.right,),
-              ],
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Form(
+          key: _formKey,
+          child: Column(children: <Widget>[
+            TextFormField(
+              controller: _nameCon,
+              validator: (String s) {
+                if (s != "") {
+                  return "Nama tidak boleh kosong";
+                }
+                return null;
+              },
             ),
-          );
-        },
-      ),
-    );
+            FlatButton(
+              child: Text("Submit"),
+              onPressed: (){
+                if (_formKey.currentState.validate()) {
+                  TesController().getData(name: _nameCon.text);
+                }
+              },
+            )
+          ]),
+        )
+        // body: ListView.builder(
+        //   itemCount: _telepon.length,
+        //   itemBuilder: (context, i) {
+        //     return ListTile(
+        //       title: Text(_telepon[i].getNama),
+        //       subtitle: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: <Widget>[
+        //           Text(_telepon[i].getNomor, textAlign: TextAlign.left,),
+        //           Text("alamat", textAlign: TextAlign.right,),
+        //         ],
+        //       ),
+        //     );
+        //   },
+        // ),
+        );
   }
 }
